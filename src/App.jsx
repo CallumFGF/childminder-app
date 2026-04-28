@@ -1,13 +1,10 @@
 import { useState } from 'react'
-import ParentsForm from './pages/ParentsForm'
-import ChildrenForm from './pages/ChildrenForm'
-import ScheduleForm from './pages/ScheduleForm'
 import InvoiceCalculator from './pages/InvoiceCalculator'
+import FamilyWorkspace from './pages/FamilyWorkspace'
 
 const TABS = [
-  { id: 'invoice', label: 'Invoices', hint: 'Monthly billing and printouts' },
-  { id: 'families', label: 'Families', hint: 'Parent and child records' },
-  { id: 'schedules', label: 'Schedules', hint: 'Weekly attendance planning' },
+  { id: 'invoice', label: 'Invoices' },
+  { id: 'families', label: 'Families' },
 ]
 
 function App() {
@@ -45,11 +42,6 @@ function App() {
             </div>
           </div>
 
-          <div className="px-5 py-3 sm:px-8">
-            <p className="text-sm text-base-content/60">
-              {TABS.find(tab => tab.id === activeTab)?.hint}
-            </p>
-          </div>
         </div>
       </div>
 
@@ -57,19 +49,7 @@ function App() {
         <div className="mx-auto max-w-6xl">
           <div className="space-y-6">
             {activeTab === 'invoice' && <InvoiceCalculator />}
-
-            {activeTab === 'families' && (
-              <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-                <ParentsForm />
-                <ChildrenForm />
-              </div>
-            )}
-
-            {activeTab === 'schedules' && (
-              <div className="max-w-3xl">
-                <ScheduleForm />
-              </div>
-            )}
+            {activeTab === 'families' && <FamilyWorkspace />}
           </div>
         </div>
       </div>

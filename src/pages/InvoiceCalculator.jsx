@@ -20,10 +20,10 @@ function CalendarGrid({ year, monthNum, dayStatusMap }) {
   }
 
   return (
-    <div>
-      <div className="grid grid-cols-7 mb-1">
+    <div className="max-w-[28rem]">
+      <div className="mb-1 grid grid-cols-7 gap-1">
         {WEEK_HEADERS.map((h, i) => (
-          <div key={h} className={`text-center text-xs font-semibold py-1 ${i >= 5 ? 'text-base-content/25' : 'text-base-content/40'}`}>
+          <div key={h} className={`text-center text-[11px] font-semibold py-1 ${i >= 5 ? 'text-base-content/25' : 'text-base-content/40'}`}>
             {h}
           </div>
         ))}
@@ -38,7 +38,7 @@ function CalendarGrid({ year, monthNum, dayStatusMap }) {
               <div
                 key={di}
                 className={[
-                  'flex items-center justify-center rounded-md aspect-square text-xs font-medium',
+                  'flex h-10 items-center justify-center rounded-md text-[11px] font-medium sm:h-11',
                   isWeekend ? 'text-base-content/20' : '',
                   status === 'funded' ? 'bg-success text-success-content font-bold' : '',
                   status === 'private-term' ? 'bg-warning text-warning-content font-bold' : '',
@@ -111,7 +111,7 @@ function PrintCalendar({ year, monthNum, dayStatusMap }) {
           })}
         </div>
       ))}
-      <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 10, color: '#6b7280' }}>
+      <div style={{ display: 'flex', gap: 16, marginTop: 8, fontSize: 10, color: '#687579', flexWrap: 'wrap' }}>
         <span><span style={{ display: 'inline-block', width: 10, height: 10, background: '#22c55e', borderRadius: 2, marginRight: 4 }} />Funded</span>
         <span><span style={{ display: 'inline-block', width: 10, height: 10, background: '#f59e0b', borderRadius: 2, marginRight: 4 }} />Private (term)</span>
         <span><span style={{ display: 'inline-block', width: 10, height: 10, background: '#fb923c', borderRadius: 2, marginRight: 4 }} />Holiday</span>
@@ -301,9 +301,6 @@ export default function InvoiceCalculator() {
         <div className="border-b border-base-300/80 px-6 py-5">
           <p className="app-kicker">Billing Workspace</p>
           <h2 className="app-section-title mt-2">Generate invoice</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-base-content/65">
-            Choose the billing month and parent, then review attendance and charges before printing.
-          </p>
         </div>
         <div className="px-6 py-6">
           <div className="grid gap-4 lg:grid-cols-[11rem_minmax(0,1fr)_auto] lg:items-end">
@@ -336,7 +333,7 @@ export default function InvoiceCalculator() {
       {results && results.children.length > 0 && (
         <>
           {/* Summary stats */}
-          <div className="screen-only grid gap-3 lg:grid-cols-3">
+          <div className="screen-only grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             <div className="app-stat">
               <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Amount due</div>
               <div className="app-stat-value mt-3 text-primary">£{grandTotal}</div>
@@ -372,15 +369,23 @@ export default function InvoiceCalculator() {
                 <div className="space-y-6">
                   {results.children.map(r => (
                     <div key={r.childName}>
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="font-medium">{r.childName}</span>
-                        {fundingBadge(r.fundingType)}
+                      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium">{r.childName}</span>
+                          {fundingBadge(r.fundingType)}
+                        </div>
+                        <div className="flex flex-wrap gap-2 text-xs text-base-content/60">
+                          <span className="rounded-full bg-base-200 px-3 py-1">{r.totalDays} days</span>
+                          <span className="rounded-full bg-base-200 px-3 py-1">{r.totalDays * 10} hrs booked</span>
+                          <span className="rounded-full bg-base-200 px-3 py-1 text-success">{r.totalFundedHours} funded</span>
+                          <span className="rounded-full bg-base-200 px-3 py-1 text-accent">{r.totalPrivateHours} chargeable</span>
+                        </div>
                       </div>
 
                       <CalendarGrid year={results.year} monthNum={results.monthNum} dayStatusMap={r.dayStatusMap} />
 
                       {/* Per-child totals */}
-                      <div className="grid grid-cols-2 gap-3 mt-4 text-sm">
+                      <div className="mt-4 grid gap-3 text-sm sm:grid-cols-2 xl:grid-cols-4">
                         <div className="app-grid-card">
                           <div className="text-base-content/60 text-xs mb-0.5">Total days</div>
                           <div className="font-bold">{r.totalDays} days · {r.totalDays * 10} hrs</div>
@@ -474,7 +479,7 @@ export default function InvoiceCalculator() {
               )}
 
               <div className="divider my-3" />
-              <div className="flex items-center justify-between">
+              <div className="flex flex-wrap items-center justify-between gap-3">
                 <span className="text-xl font-bold">Grand Total: £{grandTotal}</span>
                 <button className="btn btn-secondary gap-2" onClick={handlePrint}>🖨️ Print / Save as PDF</button>
               </div>
@@ -486,28 +491,29 @@ export default function InvoiceCalculator() {
       {/* Printable invoice */}
       <div className="print-only" ref={printRef}>
         {results && (
-          <div style={{ fontFamily: 'system-ui, sans-serif', color: '#000', background: '#fff', padding: '48px', fontSize: '14px', lineHeight: '1.6' }}>
+          <div style={{ fontFamily: 'Manrope, system-ui, sans-serif', color: '#24363b', background: '#fffdfa', padding: '40px', fontSize: '14px', lineHeight: '1.6' }}>
 
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '34px', borderBottom: '1px solid #dde3de', paddingBottom: '18px' }}>
               <div>
-                <h1 style={{ fontSize: '26px', fontWeight: 700, margin: '0 0 4px' }}>Invoice</h1>
-                <p style={{ color: '#6b7280', margin: 0 }}>{results.monthText}</p>
+                <p style={{ margin: '0 0 6px', fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: '#7a8788', fontWeight: 700 }}>Childminding Admin</p>
+                <h1 style={{ fontSize: '28px', fontWeight: 800, margin: '0 0 4px' }}>Invoice</h1>
+                <p style={{ color: '#687579', margin: 0 }}>{results.monthText}</p>
               </div>
-              <div style={{ textAlign: 'right', fontSize: '13px' }}>
+              <div style={{ textAlign: 'right', fontSize: '13px', maxWidth: '260px' }}>
                 <p style={{ fontWeight: 600, marginBottom: '2px' }}>Beth Fisher &amp; Callum Fackrell</p>
-                <p style={{ color: '#6b7280', margin: '0 0 2px' }}>Flat 2 Florence House, 4 Lime Place, ME1 3YU</p>
-                <p style={{ color: '#6b7280', margin: 0 }}>Ofsted: 2769014 / 2818829</p>
+                <p style={{ color: '#687579', margin: '0 0 2px' }}>Flat 2 Florence House, 4 Lime Place, ME1 3YU</p>
+                <p style={{ color: '#687579', margin: 0 }}>Ofsted: 2769014 / 2818829</p>
               </div>
             </div>
 
             {/* Billed to */}
-            <div style={{ marginBottom: '32px' }}>
-              <p style={{ fontWeight: 600, marginBottom: '4px' }}>Billed to:</p>
+            <div style={{ marginBottom: '28px', border: '1px solid #dde3de', borderRadius: '14px', padding: '16px 18px', background: '#ffffff' }}>
+              <p style={{ fontWeight: 700, marginBottom: '4px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#7a8788' }}>Billed to</p>
               <p style={{ margin: '0 0 2px' }}>{results.parent.name}</p>
-              {results.parent.address && <p style={{ margin: '0 0 2px', color: '#6b7280' }}>{results.parent.address}</p>}
-              {results.parent.email && <p style={{ margin: '0 0 2px', color: '#6b7280' }}>{results.parent.email}</p>}
-              {results.parent.phone && <p style={{ margin: 0, color: '#6b7280' }}>{results.parent.phone}</p>}
+              {results.parent.address && <p style={{ margin: '0 0 2px', color: '#687579' }}>{results.parent.address}</p>}
+              {results.parent.email && <p style={{ margin: '0 0 2px', color: '#687579' }}>{results.parent.email}</p>}
+              {results.parent.phone && <p style={{ margin: 0, color: '#687579' }}>{results.parent.phone}</p>}
             </div>
 
             {/* Per-child: calendar + summary */}
@@ -515,17 +521,17 @@ export default function InvoiceCalculator() {
               const grossCost = ((r.totalFundedHours + r.totalPrivateHours) * results.rates.standard_rate).toFixed(2)
               const fundedSaving = (r.totalFundedHours * results.rates.standard_rate).toFixed(2)
               return (
-                <div key={r.childName} style={{ marginBottom: '28px', borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
+                <div key={r.childName} style={{ marginBottom: '24px', border: '1px solid #dde3de', borderRadius: '16px', padding: '18px', background: '#ffffff' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '14px', gap: '20px' }}>
                     {/* Calendar */}
                     <div>
-                      <p style={{ fontWeight: 600, marginBottom: '8px' }}>{r.childName}</p>
+                      <p style={{ fontWeight: 700, marginBottom: '8px' }}>{r.childName}</p>
                       <PrintCalendar year={results.year} monthNum={results.monthNum} dayStatusMap={r.dayStatusMap} />
                     </div>
                     {/* Per-child cost breakdown */}
-                    <div style={{ minWidth: '200px', fontSize: '13px' }}>
+                    <div style={{ minWidth: '220px', fontSize: '13px' }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                        <span style={{ color: '#6b7280' }}>{r.totalDays} days × 10 hrs × £{results.rates.standard_rate}</span>
+                        <span style={{ color: '#687579' }}>{r.totalDays} days × 10 hrs × £{results.rates.standard_rate}</span>
                         <span>£{grossCost}</span>
                       </div>
                       {r.totalFundedHours > 0 && (
@@ -536,11 +542,11 @@ export default function InvoiceCalculator() {
                       )}
                       {parseFloat(r.consumablesCost) > 0 && (
                         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                          <span style={{ color: '#6b7280' }}>Consumables</span>
+                          <span style={{ color: '#687579' }}>Consumables</span>
                           <span>£{r.consumablesCost}</span>
                         </div>
                       )}
-                      <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, borderTop: '1px solid #e5e7eb', paddingTop: '6px', marginTop: '4px' }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, borderTop: '1px solid #dde3de', paddingTop: '8px', marginTop: '8px' }}>
                         <span>Subtotal</span>
                         <span>£{r.totalDue}</span>
                       </div>
@@ -552,11 +558,11 @@ export default function InvoiceCalculator() {
 
             {/* Extra charges */}
             {extraCharges.length > 0 && (
-              <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '12px', marginBottom: '12px' }}>
-                <p style={{ fontWeight: 600, marginBottom: '8px' }}>Additional Charges</p>
+              <div style={{ border: '1px solid #dde3de', borderRadius: '14px', padding: '16px 18px', marginBottom: '14px', background: '#ffffff' }}>
+                <p style={{ fontWeight: 700, marginBottom: '8px', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.06em', color: '#7a8788' }}>Additional charges</p>
                 {extraCharges.map(c => (
                   <div key={c.id} style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ color: '#6b7280' }}>{c.description}</span>
+                    <span style={{ color: '#687579' }}>{c.description}</span>
                     <span style={{ color: c.amount < 0 ? '#dc2626' : '#000' }}>{c.amount >= 0 ? '£' : '−£'}{Math.abs(c.amount).toFixed(2)}</span>
                   </div>
                 ))}
@@ -564,31 +570,31 @@ export default function InvoiceCalculator() {
             )}
 
             {/* Grand total */}
-            <div style={{ borderTop: '2px solid #000', paddingTop: '10px', display: 'flex', justifyContent: 'space-between', fontWeight: 700, fontSize: '17px', marginBottom: '40px' }}>
+            <div style={{ borderTop: '2px solid #24363b', paddingTop: '12px', display: 'flex', justifyContent: 'space-between', fontWeight: 800, fontSize: '18px', marginBottom: '32px' }}>
               <span>Total Due</span>
               <span>£{grandTotal}</span>
             </div>
 
             {/* Payment details */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '32px', borderTop: '1px solid #e5e7eb', paddingTop: '24px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', gap: '32px', borderTop: '1px solid #dde3de', paddingTop: '24px' }}>
               <div>
                 <p style={{ fontWeight: 600, marginBottom: '6px' }}>Payment Details</p>
-                <p style={{ margin: '0 0 2px', color: '#6b7280' }}>Bank: Monzo</p>
-                <p style={{ margin: '0 0 2px', color: '#6b7280' }}>Account holder: Callum Fackrell</p>
-                <p style={{ margin: '0 0 2px', color: '#6b7280' }}>Account number: 74052519</p>
-                <p style={{ margin: '0 0 2px', color: '#6b7280' }}>Sort code: 04-00-03</p>
-                <p style={{ margin: '0 0 2px', color: '#6b7280' }}>BIC: MONZGB2L</p>
-                <p style={{ margin: 0, color: '#6b7280' }}>IBAN: GB18 MONZ 0400 0374 0525 19</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Bank: Monzo</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account holder: Callum Fackrell</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account number: 74052519</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Sort code: 04-00-03</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>BIC: MONZGB2L</p>
+                <p style={{ margin: 0, color: '#687579' }}>IBAN: GB18 MONZ 0400 0374 0525 19</p>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ fontWeight: 600, marginBottom: '6px' }}>Payment Terms</p>
-                <p style={{ margin: '0 0 2px', color: '#6b7280' }}>Due: first weekday of the month</p>
-                <p style={{ margin: 0, color: '#6b7280' }}>Bank Transfer or Tax-Free Childcare</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Due: first weekday of the month</p>
+                <p style={{ margin: 0, color: '#687579' }}>Bank Transfer or Tax-Free Childcare</p>
               </div>
             </div>
 
-            <div style={{ marginTop: '40px', textAlign: 'center', color: '#9ca3af', fontSize: '13px' }}>
-              <p style={{ margin: 0 }}>Thank you for choosing us to care for your child. 💛</p>
+            <div style={{ marginTop: '34px', textAlign: 'center', color: '#93a0a1', fontSize: '12px' }}>
+              <p style={{ margin: 0 }}>Thank you for choosing us to care for your child.</p>
             </div>
           </div>
         )}
