@@ -1,0 +1,22 @@
+@import "tailwindcss";
+@import "daisyui/daisyui.css";
+
+body {
+  margin: 0;
+}
+
+.screen-only {
+  display: block;
+}
+.print-only {
+  display: none !important;
+}
+
+@media print {
+  .screen-only {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+}
