@@ -314,6 +314,59 @@ export default function FamilyWorkspace() {
     return result
   }
 
+  async function deleteChild(child) {
+    const confirmed = window.confirm(`Delete ${child.name}? This will also remove the saved weekly schedule for this child.`)
+    if (!confirmed) return
+
+    const scheduleResult = await supabase.from('child_schedules').delete().eq('child_id', child.id)
+    if (scheduleResult.error) {
+      setWorkspaceMessage(`Error: ${scheduleResult.error.message}`)
+      return
+    }
+
+    const childResult = await supabase.from('children').delete().eq('id', child.id)
+    if (childResult.error) {
+      setWorkspaceMessage(`Error: ${childResult.error.message}`)
+      return
+    }
+
+    await loadData()
+    setEditingChildId(null)
+    setOpenScheduleChildId(null)
+    setWorkspaceMessage('Child deleted')
+  }
+
+  async function deleteParent(parent, parentChildren) {
+    const confirmed = window.confirm(`Delete ${parent.name}? This will remove the family, all linked children, and all linked schedules.`)
+    if (!confirmed) return
+
+    if (parentChildren.length > 0) {
+      const childIds = parentChildren.map((child) => child.id)
+      const scheduleResult = await supabase.from('child_schedules').delete().in('child_id', childIds)
+      if (scheduleResult.error) {
+        setWorkspaceMessage(`Error: ${scheduleResult.error.message}`)
+        return
+      }
+
+      const childrenResult = await supabase.from('children').delete().eq('parent_id', parent.id)
+      if (childrenResult.error) {
+        setWorkspaceMessage(`Error: ${childrenResult.error.message}`)
+        return
+      }
+    }
+
+    const parentResult = await supabase.from('parents').delete().eq('id', parent.id)
+    if (parentResult.error) {
+      setWorkspaceMessage(`Error: ${parentResult.error.message}`)
+      return
+    }
+
+    await loadData()
+    setExpandedParentId(null)
+    setEditingParentId(null)
+    setWorkspaceMessage('Family deleted')
+  }
+
   function fundingBadge(type) {
     if (type === '30hr') return <span className="badge badge-success badge-sm">30hr funded</span>
     if (type === '15hr') return <span className="badge badge-info badge-sm">15hr funded</span>
@@ -324,11 +377,10 @@ export default function FamilyWorkspace() {
     <section className="space-y-4">
       <div className="app-panel rounded-2xl">
         <div className="border-b border-base-300/80 px-6 py-5">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="app-kicker">Family Records</p>
               <h2 className="app-section-title mt-2">Families and children</h2>
-              <p className="mt-2 text-sm text-base-content/65">Organise each family as one card, then manage children and schedules inside that flow.</p>
             </div>
             <button className="btn btn-primary" onClick={() => setShowAddParent((current) => !current)}>
               {showAddParent ? 'Close add parent' : '+ Add parent'}
@@ -360,7 +412,7 @@ export default function FamilyWorkspace() {
           return (
             <article key={parent.id} className="app-panel rounded-2xl">
               <div className="px-6 py-5">
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-lg font-semibold">{parent.name}</h3>
@@ -382,12 +434,15 @@ export default function FamilyWorkspace() {
                     <button className="btn btn-primary btn-sm" onClick={() => setAddingChildToParentId(isAddingChild ? null : parent.id)}>
                       {isAddingChild ? 'Close add child' : '+ Add child'}
                     </button>
+                    <button className="btn btn-ghost btn-sm text-error" onClick={() => deleteParent(parent, parentChildren)}>
+                      Delete
+                    </button>
                   </div>
                 </div>
 
-                {(isEditingParent || isAddingChild || isExpanded) && <div className="mt-5 border-t border-base-300/80" />}
+                {(isEditingParent || isAddingChild || isExpanded) && <div className="mt-4 border-t border-base-300/80" />}
 
-                <div className="mt-5 space-y-4">
+                <div className="mt-4 space-y-4">
                   {isEditingParent && (
                     <ParentForm
                       title={`Edit ${parent.name}`}
@@ -427,7 +482,7 @@ export default function FamilyWorkspace() {
 
                         return (
                           <div key={child.id} className="rounded-2xl border border-base-300 bg-base-100/75 p-4">
-                            <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+                            <div className="flex flex-col gap-2 lg:flex-row lg:items-start lg:justify-between">
                               <div>
                                 <div className="flex flex-wrap items-center gap-2">
                                   <h4 className="font-semibold">{child.name}</h4>
@@ -444,6 +499,9 @@ export default function FamilyWorkspace() {
                                 </button>
                                 <button className="btn btn-ghost btn-sm" onClick={() => setOpenScheduleChildId(isScheduleOpen ? null : child.id)}>
                                   {isScheduleOpen ? 'Hide schedule' : 'Schedule'}
+                                </button>
+                                <button className="btn btn-ghost btn-sm text-error" onClick={() => deleteChild(child)}>
+                                  Delete
                                 </button>
                               </div>
                             </div>

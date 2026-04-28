@@ -133,6 +133,13 @@ export default function InvoiceCalculator() {
 
   const printRef = useRef()
 
+  function shiftMonth(offset) {
+    const source = month ? new Date(`${month}-01`) : new Date()
+    source.setMonth(source.getMonth() + offset)
+    const next = `${source.getFullYear()}-${String(source.getMonth() + 1).padStart(2, '0')}`
+    setMonth(next)
+  }
+
   async function loadParents() {
     const { data } = await supabase.from('parents').select('id, name').order('name')
     setParents(data || [])
@@ -303,18 +310,37 @@ export default function InvoiceCalculator() {
           <h2 className="app-section-title mt-2">Generate invoice</h2>
         </div>
         <div className="px-6 py-6">
-          <div className="grid gap-4 lg:grid-cols-[11rem_minmax(0,1fr)_auto] lg:items-end">
+          <div className="grid gap-4 lg:grid-cols-[14rem_minmax(0,1fr)_auto] lg:items-end">
             <label className="app-field">
               <span className="app-field-label">Month</span>
-              <input type="month" className="input input-bordered w-full" value={month} onChange={e => setMonth(e.target.value)} />
+              <div className="join w-full">
+                <button type="button" className="btn join-item btn-outline" onClick={() => shiftMonth(-1)}>‹</button>
+                <input type="month" className="input input-bordered join-item w-full min-w-0" value={month} onChange={e => setMonth(e.target.value)} />
+                <button type="button" className="btn join-item btn-outline" onClick={() => shiftMonth(1)}>›</button>
+              </div>
             </label>
-            <label className="app-field">
+            <div className="app-field">
               <span className="app-field-label">Parent</span>
-              <select className="select select-bordered w-full" value={parentId} onChange={e => setParentId(e.target.value)} onClick={loadParents}>
-                <option value="">Choose parent</option>
-                {parents.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-            </label>
+              {parents.length > 0 && parents.length <= 18 ? (
+                <div className="flex flex-wrap gap-2">
+                  {parents.map((parent) => (
+                    <button
+                      key={parent.id}
+                      type="button"
+                      className={`btn btn-sm ${parentId === parent.id ? 'btn-primary' : 'btn-outline'}`}
+                      onClick={() => setParentId(parent.id)}
+                    >
+                      {parent.name}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <select className="select select-bordered w-full" value={parentId} onChange={e => setParentId(e.target.value)} onClick={loadParents}>
+                  <option value="">Choose parent</option>
+                  {parents.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              )}
+            </div>
             <button className="btn btn-primary lg:min-w-36" onClick={calculate} disabled={loading || !month || !parentId}>
               {loading && <span className="loading loading-spinner loading-sm" />}
               {loading ? 'Calculating…' : 'Calculate'}
