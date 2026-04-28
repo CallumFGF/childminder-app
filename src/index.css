@@ -1,21 +1,156 @@
 @import "tailwindcss";
 @import "daisyui/daisyui.css";
 
+:root,
+[data-theme="childminderdesk"] {
+  color-scheme: light;
+  --color-base-100: oklch(98% 0.006 95);
+  --color-base-200: oklch(95.5% 0.01 95);
+  --color-base-300: oklch(91.5% 0.014 95);
+  --color-base-content: oklch(27% 0.026 205);
+
+  --color-primary: oklch(50% 0.085 188);
+  --color-primary-content: oklch(98% 0.004 185);
+  --color-secondary: oklch(57% 0.06 145);
+  --color-secondary-content: oklch(98% 0.004 145);
+  --color-accent: oklch(61% 0.075 55);
+  --color-accent-content: oklch(18% 0.02 55);
+  --color-neutral: oklch(34% 0.024 205);
+  --color-neutral-content: oklch(96% 0.004 95);
+
+  --color-info: oklch(61% 0.1 230);
+  --color-info-content: oklch(98% 0.004 230);
+  --color-success: oklch(64% 0.1 155);
+  --color-success-content: oklch(98% 0.004 155);
+  --color-warning: oklch(76% 0.14 78);
+  --color-warning-content: oklch(22% 0.02 78);
+  --color-error: oklch(62% 0.18 25);
+  --color-error-content: oklch(98% 0.004 25);
+
+  --radius-selector: 0.5rem;
+  --radius-field: 0.65rem;
+  --radius-box: 0.9rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+:root {
+  font-family: "Manrope", ui-sans-serif, system-ui, sans-serif;
+  background: var(--color-base-200);
+  color: var(--color-base-content);
+}
+
+html {
+  background:
+    radial-gradient(circle at top left, color-mix(in oklab, var(--color-primary) 10%, transparent), transparent 30%),
+    linear-gradient(180deg, var(--color-base-200), var(--color-base-100));
+}
+
 body {
   margin: 0;
+  min-height: 100vh;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 .screen-only {
   display: block;
 }
+
 .print-only {
   display: none !important;
+}
+
+.app-shell {
+  min-height: 100vh;
+  background:
+    linear-gradient(180deg, color-mix(in oklab, var(--color-primary) 4%, transparent), transparent 12rem),
+    transparent;
+}
+
+.app-panel {
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 8%, white);
+  background: color-mix(in oklab, var(--color-base-100) 92%, white);
+  box-shadow: 0 1px 2px rgba(20, 31, 32, 0.04), 0 12px 40px rgba(20, 31, 32, 0.06);
+}
+
+.app-kicker {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--color-base-content) 55%, white);
+}
+
+.app-section-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.app-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.app-field-label {
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: color-mix(in oklab, var(--color-base-content) 82%, white);
+}
+
+.app-help {
+  font-size: 0.78rem;
+  color: color-mix(in oklab, var(--color-base-content) 60%, white);
+}
+
+.app-tab {
+  border-radius: 0.75rem 0.75rem 0 0;
+  border-width: 0;
+  min-height: 3rem;
+  padding-inline: 1rem;
+  font-weight: 600;
+}
+
+.app-tab-active {
+  background: color-mix(in oklab, var(--color-base-100) 92%, white);
+  color: var(--color-primary);
+  box-shadow: inset 0 -2px 0 var(--color-primary);
+}
+
+.app-stat {
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 8%, white);
+  background: color-mix(in oklab, var(--color-base-100) 96%, white);
+  border-radius: 0.9rem;
+  padding: 1rem;
+}
+
+.app-stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.app-grid-card {
+  border: 1px solid color-mix(in oklab, var(--color-base-content) 7%, white);
+  border-radius: 0.85rem;
+  background: color-mix(in oklab, var(--color-base-200) 72%, white);
+  padding: 0.9rem;
 }
 
 @media print {
   .screen-only {
     display: none !important;
   }
+
   .print-only {
     display: block !important;
   }

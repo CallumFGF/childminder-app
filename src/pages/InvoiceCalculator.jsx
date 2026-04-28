@@ -297,30 +297,34 @@ export default function InvoiceCalculator() {
 
   return (
     <div className="space-y-4">
-
-      {/* Controls */}
-      <div className="card bg-base-100 shadow-sm border border-base-300 screen-only">
-        <div className="card-body pb-5">
-          <h2 className="card-title text-base-content mb-1">Generate Invoice</h2>
-          <div className="flex flex-wrap gap-4 items-end">
-            <div className="form-control">
-              <label className="label py-1"><span className="label-text font-medium">Month</span></label>
-              <input type="month" className="input input-bordered w-40" value={month} onChange={e => setMonth(e.target.value)} />
-            </div>
-            <div className="form-control">
-              <label className="label py-1"><span className="label-text font-medium">Parent</span></label>
-              <select className="select select-bordered" value={parentId} onChange={e => setParentId(e.target.value)} onClick={loadParents}>
-                <option value="">— Choose Parent —</option>
+      <section className="app-panel rounded-2xl screen-only">
+        <div className="border-b border-base-300/80 px-6 py-5">
+          <p className="app-kicker">Billing Workspace</p>
+          <h2 className="app-section-title mt-2">Generate invoice</h2>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-base-content/65">
+            Choose the billing month and parent, then review attendance and charges before printing.
+          </p>
+        </div>
+        <div className="px-6 py-6">
+          <div className="grid gap-4 lg:grid-cols-[11rem_minmax(0,1fr)_auto] lg:items-end">
+            <label className="app-field">
+              <span className="app-field-label">Month</span>
+              <input type="month" className="input input-bordered w-full" value={month} onChange={e => setMonth(e.target.value)} />
+            </label>
+            <label className="app-field">
+              <span className="app-field-label">Parent</span>
+              <select className="select select-bordered w-full" value={parentId} onChange={e => setParentId(e.target.value)} onClick={loadParents}>
+                <option value="">Choose parent</option>
                 {parents.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
-            </div>
-            <button className="btn btn-primary" onClick={calculate} disabled={loading || !month || !parentId}>
+            </label>
+            <button className="btn btn-primary lg:min-w-36" onClick={calculate} disabled={loading || !month || !parentId}>
               {loading && <span className="loading loading-spinner loading-sm" />}
               {loading ? 'Calculating…' : 'Calculate'}
             </button>
           </div>
         </div>
-      </div>
+      </section>
 
       {/* No children found */}
       {results && results.children.length === 0 && (
@@ -332,29 +336,32 @@ export default function InvoiceCalculator() {
       {results && results.children.length > 0 && (
         <>
           {/* Summary stats */}
-          <div className="stats stats-vertical shadow w-full bg-base-100 border border-base-300 screen-only">
-            <div className="stat">
-              <div className="stat-title">Amount Due</div>
-              <div className="stat-value text-secondary">£{grandTotal}</div>
-              <div className="stat-desc">{results.parent.name} · {results.monthText}</div>
+          <div className="screen-only grid gap-3 lg:grid-cols-3">
+            <div className="app-stat">
+              <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Amount due</div>
+              <div className="app-stat-value mt-3 text-primary">£{grandTotal}</div>
+              <div className="mt-2 text-sm text-base-content/60">{results.parent.name} · {results.monthText}</div>
             </div>
-            <div className="stat">
-              <div className="stat-title">Funded Hours</div>
-              <div className="stat-value text-success">{totalFundedHours}</div>
-              <div className="stat-desc">Covered by government</div>
+            <div className="app-stat">
+              <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Funded hours</div>
+              <div className="app-stat-value mt-3 text-success">{totalFundedHours}</div>
+              <div className="mt-2 text-sm text-base-content/60">Covered by funded childcare</div>
             </div>
-            <div className="stat">
-              <div className="stat-title">Chargeable Hours</div>
-              <div className="stat-value text-warning">{totalPrivateHours}</div>
-              <div className="stat-desc">@ £{results.rates.standard_rate}/hr</div>
+            <div className="app-stat">
+              <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Chargeable hours</div>
+              <div className="app-stat-value mt-3 text-accent">{totalPrivateHours}</div>
+              <div className="mt-2 text-sm text-base-content/60">@ £{results.rates.standard_rate}/hr</div>
             </div>
           </div>
 
           {/* Per-child breakdown with view toggle */}
-          <div className="card bg-base-100 shadow-sm border border-base-300 screen-only">
-            <div className="card-body">
+          <div className="app-panel rounded-2xl screen-only">
+            <div className="px-6 py-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold">Breakdown</h3>
+                <div>
+                  <p className="app-kicker">Attendance Review</p>
+                  <h3 className="mt-2 text-lg font-semibold">Breakdown</h3>
+                </div>
                 <div className="join">
                   <button className={`btn btn-xs join-item ${viewMode === 'calendar' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setViewMode('calendar')}>Calendar</button>
                   <button className={`btn btn-xs join-item ${viewMode === 'table' ? 'btn-primary' : 'btn-ghost'}`} onClick={() => setViewMode('table')}>Table</button>
@@ -373,20 +380,20 @@ export default function InvoiceCalculator() {
                       <CalendarGrid year={results.year} monthNum={results.monthNum} dayStatusMap={r.dayStatusMap} />
 
                       {/* Per-child totals */}
-                      <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
-                        <div className="bg-base-200 rounded-lg p-3">
+                      <div className="grid grid-cols-2 gap-3 mt-4 text-sm">
+                        <div className="app-grid-card">
                           <div className="text-base-content/60 text-xs mb-0.5">Total days</div>
                           <div className="font-bold">{r.totalDays} days · {r.totalDays * 10} hrs</div>
                         </div>
-                        <div className="bg-base-200 rounded-lg p-3">
+                        <div className="app-grid-card">
                           <div className="text-base-content/60 text-xs mb-0.5">Funded</div>
                           <div className="font-bold text-success">{r.totalFundedHours} hrs</div>
                         </div>
-                        <div className="bg-base-200 rounded-lg p-3">
+                        <div className="app-grid-card">
                           <div className="text-base-content/60 text-xs mb-0.5">Chargeable</div>
-                          <div className="font-bold text-warning">{r.totalPrivateHours} hrs</div>
+                          <div className="font-bold text-accent">{r.totalPrivateHours} hrs</div>
                         </div>
-                        <div className="bg-base-200 rounded-lg p-3">
+                        <div className="app-grid-card">
                           <div className="text-base-content/60 text-xs mb-0.5">Amount due</div>
                           <div className="font-bold">£{r.totalDue}</div>
                         </div>
@@ -432,16 +439,17 @@ export default function InvoiceCalculator() {
           </div>
 
           {/* Extra charges + total + print */}
-          <div className="card bg-base-100 shadow-sm border border-base-300 screen-only">
-            <div className="card-body">
-              <h3 className="font-semibold mb-3">Additional Charges</h3>
+          <div className="app-panel rounded-2xl screen-only">
+            <div className="px-6 py-6">
+              <p className="app-kicker">Adjustments</p>
+              <h3 className="mt-2 text-lg font-semibold mb-3">Additional charges</h3>
               <div className="flex flex-wrap gap-3 items-end">
-                <div className="form-control flex-1 min-w-[160px]">
-                  <label className="label py-1"><span className="label-text">Description</span></label>
+                <div className="app-field flex-1 min-w-[160px]">
+                  <span className="app-field-label">Description</span>
                   <input className="input input-bordered" placeholder="e.g. Late collection fee" value={newDescription} onChange={e => setNewDescription(e.target.value)} />
                 </div>
-                <div className="form-control w-28">
-                  <label className="label py-1"><span className="label-text">Amount (£)</span></label>
+                <div className="app-field w-28">
+                  <span className="app-field-label">Amount (£)</span>
                   <input className="input input-bordered" type="number" step="0.01" placeholder="0.00" value={newAmount} onChange={e => setNewAmount(e.target.value)} />
                 </div>
                 <button className="btn btn-outline btn-primary" onClick={addExtraCharge}>+ Add</button>

@@ -28,40 +28,63 @@ export default function ParentsForm() {
   }
 
   return (
-    <div className="card bg-base-100 shadow-xl p-6 max-w-lg mx-auto">
-      <h2 className="text-xl font-bold mb-4">Add a Parent</h2>
-      {message && <div className="alert alert-info mb-4">{message}</div>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          className="input input-bordered w-full"
-          placeholder="Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
-        <input
-          className="input input-bordered w-full"
-          type="email"
-          placeholder="Email (optional)"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          className="input input-bordered w-full"
-          placeholder="Phone (optional)"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-        <textarea
-          className="textarea textarea-bordered w-full"
-          placeholder="Address (optional)"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-        />
-        <button className="btn btn-primary w-full" type="submit">
-          Save Parent
-        </button>
-      </form>
-    </div>
+    <section className="app-panel rounded-2xl">
+      <div className="border-b border-base-300/80 px-6 py-5">
+        <p className="app-kicker">Family Records</p>
+        <h2 className="app-section-title mt-2">Add a parent</h2>
+        <p className="mt-2 text-sm text-base-content/65">Keep billing contacts and address details together for invoicing.</p>
+      </div>
+
+      <div className="px-6 py-6">
+        {message && <div className="alert alert-info mb-5 text-sm">{message}</div>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="app-field">
+            <span className="app-field-label">Full name</span>
+            <input
+              className="input input-bordered w-full"
+              placeholder="Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </label>
+
+          <label className="app-field">
+            <span className="app-field-label">Email</span>
+            <input
+              className="input input-bordered w-full"
+              type="email"
+              placeholder="Email (optional)"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </label>
+
+          <label className="app-field">
+            <span className="app-field-label">Phone</span>
+            <input
+              className="input input-bordered w-full"
+              placeholder="Phone (optional)"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+            />
+          </label>
+
+          <label className="app-field">
+            <span className="app-field-label">Address</span>
+            <textarea
+              className="textarea textarea-bordered min-h-28 w-full"
+              placeholder="Address (optional)"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+            />
+          </label>
+
+          <button className="btn btn-primary w-full sm:w-auto" type="submit">
+            Save Parent
+          </button>
+        </form>
+      </div>
+    </section>
   )
 }

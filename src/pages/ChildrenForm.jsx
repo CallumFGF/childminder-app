@@ -44,66 +44,82 @@ export default function ChildrenForm() {
   }
 
   return (
-    <div className="card bg-base-100 shadow-xl p-6 max-w-lg mx-auto mt-8">
-      <h2 className="text-xl font-bold mb-4">Add a Child</h2>
-      {message && <div className="alert alert-info mb-4">{message}</div>}
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Parent dropdown */}
-        <select
-          className="select select-bordered w-full"
-          value={parentId}
-          onChange={(e) => setParentId(e.target.value)}
-          required
-        >
-          <option value="">-- Select Parent --</option>
-          {parents.map((p) => (
-            <option key={p.id} value={p.id}>{p.name}</option>
-          ))}
-        </select>
+    <section className="app-panel rounded-2xl">
+      <div className="border-b border-base-300/80 px-6 py-5">
+        <p className="app-kicker">Child Records</p>
+        <h2 className="app-section-title mt-2">Add a child</h2>
+        <p className="mt-2 text-sm text-base-content/65">Store the linked parent, date of birth, and funded-hours setup.</p>
+      </div>
 
-        <input
-          className="input input-bordered w-full"
-          placeholder="Child's Full Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          required
-        />
+      <div className="px-6 py-6">
+        {message && <div className="alert alert-info mb-5 text-sm">{message}</div>}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <label className="app-field">
+            <span className="app-field-label">Parent</span>
+            <select
+              className="select select-bordered w-full"
+              value={parentId}
+              onChange={(e) => setParentId(e.target.value)}
+              required
+            >
+              <option value="">Select parent</option>
+              {parents.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </label>
 
-        <input
-          className="input input-bordered w-full"
-          type="date"
-          value={dob}
-          onChange={(e) => setDob(e.target.value)}
-        />
+          <label className="app-field">
+            <span className="app-field-label">Child name</span>
+            <input
+              className="input input-bordered w-full"
+              placeholder="Child's Full Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+          </label>
 
-        {/* Funding Type */}
-        <select
-          className="select select-bordered w-full"
-          value={fundingType}
-          onChange={(e) => setFundingType(e.target.value)}
-        >
-          <option value="None">No Funding</option>
-          <option value="15hr">15 Hours Funded</option>
-          <option value="30hr">30 Hours Funded</option>
-        </select>
+          <label className="app-field">
+            <span className="app-field-label">Date of birth</span>
+            <input
+              className="input input-bordered w-full"
+              type="date"
+              value={dob}
+              onChange={(e) => setDob(e.target.value)}
+            />
+          </label>
 
-        {/* Stretched toggle (only relevant if funding) */}
+          <label className="app-field">
+            <span className="app-field-label">Funding type</span>
+            <select
+              className="select select-bordered w-full"
+              value={fundingType}
+              onChange={(e) => setFundingType(e.target.value)}
+            >
+              <option value="None">No Funding</option>
+              <option value="15hr">15 Hours Funded</option>
+              <option value="30hr">30 Hours Funded</option>
+            </select>
+          </label>
+
         {fundingType !== 'None' && (
-          <label className="flex items-center gap-2 cursor-pointer">
+          <label className="flex items-start gap-3 rounded-xl border border-base-300 bg-base-200/60 px-4 py-3">
             <input
               type="checkbox"
               className="checkbox"
               checked={isStretched}
               onChange={(e) => setIsStretched(e.target.checked)}
             />
-            <span>Stretched Funding (spread across 51/52 weeks)</span>
+            <span className="text-sm leading-6">Stretched funding spread across 51 to 52 weeks</span>
           </label>
         )}
 
-        <button className="btn btn-primary w-full" type="submit">
-          Save Child
-        </button>
-      </form>
-    </div>
+          <button className="btn btn-primary w-full sm:w-auto" type="submit">
+            Save Child
+          </button>
+        </form>
+      </div>
+    </section>
   )
 }
