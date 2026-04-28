@@ -28,20 +28,6 @@ function App() {
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:min-w-[26rem]">
-                <div className="app-stat">
-                  <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Purpose</div>
-                  <div className="mt-2 text-sm font-semibold">Admin first</div>
-                </div>
-                <div className="app-stat">
-                  <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Tone</div>
-                  <div className="mt-2 text-sm font-semibold">Professional</div>
-                </div>
-                <div className="app-stat col-span-2 sm:col-span-1">
-                  <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Operators</div>
-                  <div className="mt-2 text-sm font-semibold">Beth Fisher &amp; Callum Fackrell</div>
-                </div>
-              </div>
             </div>
           </div>
 
@@ -69,21 +55,6 @@ function App() {
 
       <div className="px-4 pb-8 pt-4 sm:px-6">
         <div className="mx-auto max-w-6xl">
-          <div className="screen-only mb-5 grid gap-3 sm:grid-cols-3">
-            <div className="app-stat">
-              <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Spacing</div>
-              <div className="mt-2 text-sm font-semibold">Comfortable fields, compact summaries</div>
-            </div>
-            <div className="app-stat">
-              <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Shape</div>
-              <div className="mt-2 text-sm font-semibold">Rounded enough to feel modern, not toy-like</div>
-            </div>
-            <div className="app-stat">
-              <div className="text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Colour</div>
-              <div className="mt-2 text-sm font-semibold">Quiet sage, slate, and warm amber cues</div>
-            </div>
-          </div>
-
           <div className="space-y-6">
             {activeTab === 'invoice' && <InvoiceCalculator />}
 
