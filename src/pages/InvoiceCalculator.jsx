@@ -229,12 +229,14 @@ async function buildInvoiceForParent(parentId, month) {
 
   const scheduleMap = {}
   schedules.forEach((s) => {
-    if (!scheduleMap[s.child_id]) scheduleMap[s.child_id] = { term: new Set(), holiday: new Set() }
+    const childKey = String(s.child_id)
+    if (!scheduleMap[childKey]) scheduleMap[childKey] = { term: new Set(), holiday: new Set() }
     const type = s.schedule_type === 'holiday' ? 'holiday' : 'term'
-    scheduleMap[s.child_id][type].add(s.day_of_week)
+    scheduleMap[childKey][type].add(Number(s.day_of_week))
   })
 
   function isInTerm(dateStr) {
+    if (termDates.length === 0) return true
     const d = new Date(dateStr)
     return termDates.some((t) => d >= new Date(t.start_date) && d <= new Date(t.end_date))
   }
@@ -250,7 +252,7 @@ async function buildInvoiceForParent(parentId, month) {
   const childResults = []
 
   for (const child of children) {
-    const childScheduleMap = scheduleMap[child.id]
+    const childScheduleMap = scheduleMap[String(child.id)]
     if (!childScheduleMap) continue
     if (childScheduleMap.term.size === 0 && childScheduleMap.holiday.size === 0) continue
 
@@ -265,7 +267,9 @@ async function buildInvoiceForParent(parentId, month) {
       if (scheduleDay > 4) continue
       const ds = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
       const inTerm = isInTerm(ds)
-      const relevantSchedule = inTerm ? childScheduleMap.term : childScheduleMap.holiday
+        const relevantSchedule = inTerm || childScheduleMap.holiday.size === 0
+          ? childScheduleMap.term
+          : childScheduleMap.holiday
       if (relevantSchedule.has(scheduleDay)) {
         days.push({ date: ds, inTerm })
       }
@@ -452,7 +456,8 @@ export default function InvoiceCalculator() {
   const [viewMode, setViewMode] = useState('calendar')
   const [extraCharges, setExtraCharges] = useState([])
   const [newDescription, setNewDescription] = useState('')
-  const [newAmount, setNewAmount] = useState('')
+  const [newValue, setNewValue] = useState('')
+  const [newChargeMode, setNewChargeMode] = useState('fixed')
   const [mode, setMode] = useState('single')
 
   const printRef = useRef()
@@ -508,10 +513,25 @@ export default function InvoiceCalculator() {
   })
 
   function addExtraCharge() {
-    if (!newDescription.trim() || !newAmount) return
-    setExtraCharges([...extraCharges, { id: Date.now(), description: newDescription.trim(), amount: parseFloat(newAmount) }])
+    if (!newDescription.trim() || !newValue || !results) return
+    const numericValue = parseFloat(newValue)
+    const amount = newChargeMode === 'days'
+      ? numericValue * results.rates.standard_rate * 10
+      : numericValue
+
+    setExtraCharges([
+      ...extraCharges,
+      {
+        id: Date.now(),
+        description: newDescription.trim(),
+        mode: newChargeMode,
+        value: numericValue,
+        amount,
+      },
+    ])
     setNewDescription('')
-    setNewAmount('')
+    setNewValue('')
+    setNewChargeMode('fixed')
   }
 
   function removeExtraCharge(id) {
@@ -538,19 +558,19 @@ export default function InvoiceCalculator() {
           <h2 className="app-section-title mt-2">Generate invoice</h2>
         </div>
         <div className="px-6 py-6">
-          <div className="grid gap-4 lg:grid-cols-[14rem_minmax(0,1fr)_auto_auto] lg:items-end">
+          <div className="grid gap-4 xl:grid-cols-[15rem_minmax(0,1fr)_11rem_13rem] xl:items-end">
             <label className="app-field">
               <span className="app-field-label">Month</span>
-              <div className="join w-full">
-                <button type="button" className="btn join-item btn-outline" onClick={() => shiftMonth(-1)}>‹</button>
-                <input type="month" className="input input-bordered join-item w-full min-w-0" value={month} onChange={(e) => setMonth(e.target.value)} />
-                <button type="button" className="btn join-item btn-outline" onClick={() => shiftMonth(1)}>›</button>
+              <div className="flex items-center gap-2 rounded-xl border border-base-300 bg-base-100 px-2 py-2">
+                <button type="button" className="btn btn-ghost btn-sm px-3" onClick={() => shiftMonth(-1)}>‹</button>
+                <input type="month" className="input input-ghost h-10 min-w-0 flex-1 px-2" value={month} onChange={(e) => setMonth(e.target.value)} />
+                <button type="button" className="btn btn-ghost btn-sm px-3" onClick={() => shiftMonth(1)}>›</button>
               </div>
             </label>
             <div className="app-field">
               <span className="app-field-label">Parent</span>
               {parents.length > 0 && parents.length <= 18 ? (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2 rounded-xl border border-base-300 bg-base-100 p-2">
                   {parents.map((parent) => (
                     <button
                       key={parent.id}
@@ -569,11 +589,11 @@ export default function InvoiceCalculator() {
                 </select>
               )}
             </div>
-            <button className="btn btn-primary lg:min-w-36" onClick={calculate} disabled={loading || !month || !parentId}>
+            <button className="btn btn-primary xl:min-w-40" onClick={calculate} disabled={loading || !month || !parentId}>
               {loading && <span className="loading loading-spinner loading-sm" />}
               {loading ? 'Calculating…' : 'Calculate'}
             </button>
-            <button className="btn btn-outline lg:min-w-36" onClick={exportMonthPack} disabled={loading || !month || parents.length === 0}>
+            <button className="btn btn-outline xl:min-w-48" onClick={exportMonthPack} disabled={loading || !month || parents.length === 0}>
               Export month pack
             </button>
           </div>
@@ -709,42 +729,63 @@ export default function InvoiceCalculator() {
 
           <div className="app-panel rounded-2xl screen-only">
             <div className="px-6 py-6">
-              <p className="app-kicker">Adjustments</p>
-              <h3 className="mb-3 mt-2 text-lg font-semibold">Additional charges</h3>
-              <div className="flex flex-wrap items-end gap-3">
-                <div className="app-field min-w-[160px] flex-1">
-                  <span className="app-field-label">Description</span>
-                  <input className="input input-bordered" placeholder="e.g. Late collection fee" value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
-                </div>
-                <div className="app-field w-28">
-                  <span className="app-field-label">Amount (£)</span>
-                  <input className="input input-bordered" type="number" step="0.01" placeholder="0.00" value={newAmount} onChange={(e) => setNewAmount(e.target.value)} />
-                </div>
-                <button className="btn btn-outline btn-primary" onClick={addExtraCharge}>+ Add</button>
-              </div>
-              <p className="mt-1 text-xs text-base-content/40">Use a negative amount for deductions.</p>
+              <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_20rem]">
+                <div>
+                  <p className="app-kicker">Adjustments</p>
+                  <h3 className="mb-3 mt-2 text-lg font-semibold">Additional charges and deductions</h3>
+                  <div className="grid gap-3 md:grid-cols-[minmax(0,1fr)_12rem_10rem_auto] md:items-end">
+                    <div className="app-field">
+                      <span className="app-field-label">Description</span>
+                      <input className="input input-bordered" placeholder="e.g. Provider closure" value={newDescription} onChange={(e) => setNewDescription(e.target.value)} />
+                    </div>
+                    <div className="app-field">
+                      <span className="app-field-label">Type</span>
+                      <select className="select select-bordered" value={newChargeMode} onChange={(e) => setNewChargeMode(e.target.value)}>
+                        <option value="fixed">Fixed amount</option>
+                        <option value="days">Day-based</option>
+                      </select>
+                    </div>
+                    <div className="app-field">
+                      <span className="app-field-label">{newChargeMode === 'days' ? 'Days (+/-)' : 'Amount (£)'}</span>
+                      <input className="input input-bordered" type="number" step="0.01" placeholder={newChargeMode === 'days' ? '1' : '0.00'} value={newValue} onChange={(e) => setNewValue(e.target.value)} />
+                    </div>
+                    <button className="btn btn-outline btn-primary" onClick={addExtraCharge}>+ Add</button>
+                  </div>
+                  <p className="mt-1 text-xs text-base-content/40">
+                    For day-based entries, one day equals 10 hours at the current standard rate. Use negative numbers for deductions.
+                  </p>
 
-              {extraCharges.length > 0 && (
-                <table className="table table-sm mt-3">
-                  <thead><tr><th>Description</th><th className="text-right">Amount</th><th /></tr></thead>
-                  <tbody>
-                    {extraCharges.map((charge) => (
-                      <tr key={charge.id}>
-                        <td>{charge.description}</td>
-                        <td className={`text-right font-medium ${charge.amount < 0 ? 'text-error' : 'text-success'}`}>
-                          {charge.amount >= 0 ? '+' : ''}£{charge.amount.toFixed(2)}
-                        </td>
-                        <td><button className="btn btn-xs btn-ghost text-error" onClick={() => removeExtraCharge(charge.id)}>✕</button></td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
+                  {extraCharges.length > 0 && (
+                    <div className="mt-4 overflow-x-auto">
+                      <table className="table table-sm">
+                        <thead><tr><th>Description</th><th>Type</th><th className="text-right">Value</th><th className="text-right">Amount</th><th /></tr></thead>
+                        <tbody>
+                          {extraCharges.map((charge) => (
+                            <tr key={charge.id}>
+                              <td>{charge.description}</td>
+                              <td>{charge.mode === 'days' ? 'Day-based' : 'Fixed'}</td>
+                              <td className="text-right">{charge.mode === 'days' ? `${charge.value} days` : `£${charge.value.toFixed(2)}`}</td>
+                              <td className={`text-right font-medium ${charge.amount < 0 ? 'text-error' : 'text-success'}`}>
+                                {charge.amount >= 0 ? '+' : ''}£{charge.amount.toFixed(2)}
+                              </td>
+                              <td><button className="btn btn-xs btn-ghost text-error" onClick={() => removeExtraCharge(charge.id)}>✕</button></td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
 
-              <div className="divider my-3" />
-              <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-xl font-bold">Grand Total: £{grandTotal}</span>
-                <button className="btn btn-secondary gap-2" onClick={() => { setMode('single'); handlePrint() }}>🖨️ Print / Save as PDF</button>
+                <div className="app-grid-card self-start">
+                  <div className="mb-2 text-xs font-semibold uppercase tracking-[0.08em] text-base-content/55">Invoice summary</div>
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between"><span className="text-base-content/65">Children subtotal</span><span>£{baseTotal.toFixed(2)}</span></div>
+                    <div className="flex justify-between"><span className="text-base-content/65">Adjustments</span><span>{extrasTotal >= 0 ? '+' : ''}£{extrasTotal.toFixed(2)}</span></div>
+                    <div className="border-t border-base-300 pt-3 text-base font-bold flex justify-between"><span>Total due</span><span>£{grandTotal}</span></div>
+                  </div>
+                  <button className="btn btn-secondary mt-4 w-full gap-2" onClick={() => { setMode('single'); handlePrint() }}>🖨️ Print / Save as PDF</button>
+                </div>
               </div>
             </div>
           </div>
