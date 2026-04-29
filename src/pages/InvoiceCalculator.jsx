@@ -336,6 +336,15 @@ async function buildInvoiceForParent(parentId, month) {
 }
 
 function InvoicePrintDocument({ invoices, extraChargesByParent }) {
+  // Grab the saved settings from the browser
+  const providerName = localStorage.getItem('providerName') || '[Provider Name]';
+  const providerAddress = localStorage.getItem('providerAddress') || '[Provider Address]';
+  const urn = localStorage.getItem('urn') || '[URN]';
+  const bankName = localStorage.getItem('bankName') || '[Bank Name]';
+  const accountName = localStorage.getItem('accountName') || '[Account Name]';
+  const accountNumber = localStorage.getItem('accountNumber') || '[Account Number]';
+  const sortCode = localStorage.getItem('sortCode') || '[Sort Code]';
+
   return (
     <div style={{ fontFamily: 'Manrope, system-ui, sans-serif', color: '#24363b', background: '#fffdfa', padding: '40px', fontSize: '14px', lineHeight: '1.6' }}>
       {invoices.map((invoice, index) => {
@@ -353,9 +362,9 @@ function InvoicePrintDocument({ invoices, extraChargesByParent }) {
                 <p style={{ color: '#687579', margin: 0 }}>{invoice.monthText}</p>
               </div>
               <div style={{ textAlign: 'right', fontSize: '13px', maxWidth: '260px' }}>
-                <p style={{ fontWeight: 600, marginBottom: '2px' }}>[Provider Name]</p>
-                <p style={{ color: '#687579', margin: '0 0 2px' }}>[Provider Address]</p>
-                <p style={{ color: '#687579', margin: 0 }}>Ofsted: [URN]</p>
+                <p style={{ fontWeight: 600, marginBottom: '2px' }}>{providerName}</p>
+                <p style={{ color: '#687579', margin: '0 0 2px' }}>{providerAddress}</p>
+                <p style={{ color: '#687579', margin: 0 }}>Ofsted: {urn}</p>
               </div>
             </div>
 
@@ -422,10 +431,10 @@ function InvoicePrintDocument({ invoices, extraChargesByParent }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '32px', borderTop: '1px solid #dde3de', paddingTop: '24px' }}>
               <div>
                 <p style={{ fontWeight: 600, marginBottom: '6px' }}>Payment Details</p>
-                <p style={{ margin: '0 0 2px', color: '#687579' }}>Bank: [Bank Name]</p>
-                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account holder: [Account Name]</p>
-                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account number: [Account Number]</p>
-                <p style={{ margin: '0 0 2px', color: '#687579' }}>Sort code: [Sort Code]</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Bank: {bankName}</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account holder: {accountName}</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account number: {accountNumber}</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Sort code: {sortCode}</p>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ fontWeight: 600, marginBottom: '6px' }}>Payment Terms</p>
