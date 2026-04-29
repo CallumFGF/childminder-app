@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import InvoiceCalculator from './pages/InvoiceCalculator'
 import FamilyWorkspace from './pages/FamilyWorkspace'
+import Settings from './pages/Settings'
 
 const TABS = [
   { id: 'invoice', label: 'Invoices' },
   { id: 'families', label: 'Families' },
+  { id: 'settings', label: 'Settings' },
 ]
 
 function App() {
@@ -50,6 +52,7 @@ function App() {
           <div className="space-y-6">
             {activeTab === 'invoice' && <InvoiceCalculator />}
             {activeTab === 'families' && <FamilyWorkspace />}
+            {activeTab === 'settings' && <Settings />}
           </div>
         </div>
       </div>
