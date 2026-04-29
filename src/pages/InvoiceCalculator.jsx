@@ -83,7 +83,7 @@ function CalendarGrid({ year, monthNum, dayStatusMap }) {
   }
 
   return (
-    <div className="max-w-[28rem]">
+    <div className="max-w-md">
       <div className="mb-1 grid grid-cols-7 gap-1">
         {WEEK_HEADERS.map((h, i) => (
           <div key={h} className={`py-1 text-center text-[11px] font-semibold ${i >= 5 ? 'text-base-content/25' : 'text-base-content/40'}`}>

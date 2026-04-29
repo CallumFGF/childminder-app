@@ -22,16 +22,16 @@ function App() {
     }
   }, [])
 
-  function handleLogin(e) {
+function handleLogin(e) {
     e.preventDefault()
-    // Read the secret passcode from your .env.local file
-    const correctPasscode = import.meta.env.VITE_APP_PASSCODE
+    // Read the secret passcode and remove any accidental invisible spaces
+    const correctPasscode = String(import.meta.env.VITE_APP_PASSCODE || '').trim()
     
-    if (passcode === correctPasscode) {
+    if (passcode.trim() === correctPasscode) {
       setIsAuthenticated(true)
       sessionStorage.setItem('isLoggedIn', 'true')
     } else {
-      setError('Incorrect passcode')
+      setError(`Error: You typed "${passcode.trim()}". The app expects "${correctPasscode}".`)
       setPasscode('')
     }
   }
