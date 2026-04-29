@@ -353,9 +353,9 @@ function InvoicePrintDocument({ invoices, extraChargesByParent }) {
                 <p style={{ color: '#687579', margin: 0 }}>{invoice.monthText}</p>
               </div>
               <div style={{ textAlign: 'right', fontSize: '13px', maxWidth: '260px' }}>
-                <p style={{ fontWeight: 600, marginBottom: '2px' }}>Beth Fisher &amp; Callum Fackrell</p>
-                <p style={{ color: '#687579', margin: '0 0 2px' }}>Flat 2 Florence House, 4 Lime Place, ME1 3YU</p>
-                <p style={{ color: '#687579', margin: 0 }}>Ofsted: 2769014 / 2818829</p>
+                <p style={{ fontWeight: 600, marginBottom: '2px' }}>[Provider Name]</p>
+                <p style={{ color: '#687579', margin: '0 0 2px' }}>[Provider Address]</p>
+                <p style={{ color: '#687579', margin: 0 }}>Ofsted: [URN]</p>
               </div>
             </div>
 
@@ -422,12 +422,10 @@ function InvoicePrintDocument({ invoices, extraChargesByParent }) {
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '32px', borderTop: '1px solid #dde3de', paddingTop: '24px' }}>
               <div>
                 <p style={{ fontWeight: 600, marginBottom: '6px' }}>Payment Details</p>
-                <p style={{ margin: '0 0 2px', color: '#687579' }}>Bank: Monzo</p>
-                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account holder: Callum Fackrell</p>
-                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account number: 74052519</p>
-                <p style={{ margin: '0 0 2px', color: '#687579' }}>Sort code: 04-00-03</p>
-                <p style={{ margin: '0 0 2px', color: '#687579' }}>BIC: MONZGB2L</p>
-                <p style={{ margin: 0, color: '#687579' }}>IBAN: GB18 MONZ 0400 0374 0525 19</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Bank: [Bank Name]</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account holder: [Account Name]</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Account number: [Account Number]</p>
+                <p style={{ margin: '0 0 2px', color: '#687579' }}>Sort code: [Sort Code]</p>
               </div>
               <div style={{ textAlign: 'right' }}>
                 <p style={{ fontWeight: 600, marginBottom: '6px' }}>Payment Terms</p>
